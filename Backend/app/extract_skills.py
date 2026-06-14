@@ -26,7 +26,6 @@ SKILLS = [
 ]
 
 def extract_skills_from_text(text):
-    """Job description එකෙන් skills extract කරනවා"""
     text = text.lower()
     found_skills = []
     
@@ -40,7 +39,6 @@ def extract_skills_from_text(text):
 
 
 def process_jobs_file(filepath):
-    """JSON file එකෙන් jobs load කරලා skills extract කරනවා"""
     with open(filepath, "r") as f:
         jobs = json.load(f)
     
