@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.trend_analysis import get_trending_skills, get_skill_trend
 from app.database import create_tables, get_top_skills
+from app.forecast import simple_forecast
+from app.roadmap import generate_roadmap
+from pydantic import BaseModel
 
 app = FastAPI(title="CareerPath AI API")
 
@@ -40,3 +43,19 @@ def skill_trend(skill_name: str, days: int = 30):
         "skill": skill_name,
         "trend": trend
     }
+
+@app.get("/skills/forecast/{skill_name}")
+def skill_forecast(skill_name: str):
+    return simple_forecast(skill_name)
+
+# Roadmap Endpoints
+class RoadmapRequest(BaseModel):
+    current_skills: list[str]
+    target_role: str
+
+@app.post("/roadmap/generate")
+def create_roadmap(request: RoadmapRequest):
+    return generate_roadmap(
+        user_skills=request.current_skills,
+        target_role=request.target_role
+    )
