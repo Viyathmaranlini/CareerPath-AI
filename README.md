@@ -27,3 +27,6 @@ learning roadmap for every student.
 cp .env.example .env
 # Fill in your API keys in .env
 ```
+## Author
+**Viyathmaranlini** — Built with ❤️ 
+© 2025 CareerPath AI. All rights reserved.
