@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
+import ReactMarkdown from 'react-markdown'
 
 export default function AIAdvisor() {
   const [form, setForm] = useState({
@@ -126,7 +127,7 @@ export default function AIAdvisor() {
         <div style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
           <h3 style={{ color: '#7c3aed', marginBottom: '1rem' }}>🤖 AI Career Advice</h3>
           <div style={{ whiteSpace: 'pre-wrap', lineHeight: '1.8', color: '#1e293b', fontSize: '0.95rem' }}>
-            {result.advice}
+            <ReactMarkdown>{result.advice}</ReactMarkdown>
           </div>
           <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#f8fafc', borderRadius: '8px', fontSize: '0.85rem', color: '#64748b' }}>
             📊 Roadmap steps: {result.roadmap_steps} skills to learn
