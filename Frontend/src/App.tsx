@@ -3,6 +3,7 @@ import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import TrendingSkills from './pages/TrendingSkills'
 import Roadmap from './pages/Roadmap'
+import AIAdvisor from './pages/AIAdvisor'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/trending" element={<TrendingSkills />} />
           <Route path="/roadmap" element={<Roadmap />} />
+          <Route path="/ai-advisor" element={<AIAdvisor />} />
         </Routes>
       </div>
     </Router>
