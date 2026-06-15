@@ -15,6 +15,7 @@ export default function Navbar() {
       <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>Home</Link>
       <Link to="/trending" style={{ color: 'white', textDecoration: 'none' }}>Trending Skills</Link>
       <Link to="/roadmap" style={{ color: 'white', textDecoration: 'none' }}>My Roadmap</Link>
+      <Link to="/ai-advisor" style={{ color: 'white', textDecoration: 'none' }}>🤖 AI Advisor</Link>
     </nav>
   )
 }
