@@ -80,3 +80,28 @@ def lk_top_paying_roles():
 def collect_salary_data():
     data = get_techsalary_data()
     return {"message": f"✅ {len(data)} salary records collected!", "data": data}
+
+from app.ai_advisor import get_ai_career_advice
+from pydantic import BaseModel
+
+# AI Career Advisor Endpoint
+class CareerAdviceRequest(BaseModel):
+    name: str
+    degree: str
+    university: str
+    skills: list[str]
+    experience_years: int
+    target_role: str
+    goal: str
+
+@app.post("/ai/career-advice")
+def career_advice(request: CareerAdviceRequest):
+    return get_ai_career_advice(
+        name=request.name,
+        degree=request.degree,
+        university=request.university,
+        skills=request.skills,
+        experience_years=request.experience_years,
+        target_role=request.target_role,
+        goal=request.goal
+    )
