@@ -16,6 +16,7 @@ export default function Navbar() {
       <Link to="/trending" style={{ color: 'white', textDecoration: 'none' }}>Trending Skills</Link>
       <Link to="/roadmap" style={{ color: 'white', textDecoration: 'none' }}>My Roadmap</Link>
       <Link to="/ai-advisor" style={{ color: 'white', textDecoration: 'none' }}>🤖 AI Advisor</Link>
+      <Link to="/extinction" style={{ color: 'white', textDecoration: 'none' }}>☠️ Skill Extinction</Link>
     </nav>
   )
 }

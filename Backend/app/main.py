@@ -5,6 +5,11 @@ from app.database import create_tables, get_top_skills
 from app.forecast import simple_forecast
 from app.roadmap import generate_roadmap
 from pydantic import BaseModel
+from app.lk_salary_insights import get_salary_by_role, get_top_paying_roles, get_salary_by_experience
+from app.lk_scraper import get_techsalary_data
+from app.ai_advisor import get_ai_career_advice
+from pydantic import BaseModel
+from app.skill_extinction import predict_skill_future, get_extinction_report
 
 app = FastAPI(title="CareerPath AI API")
 
@@ -60,8 +65,6 @@ def create_roadmap(request: RoadmapRequest):
         target_role=request.target_role
     )
 
-from app.lk_salary_insights import get_salary_by_role, get_top_paying_roles, get_salary_by_experience
-from app.lk_scraper import get_techsalary_data
 
 # Sri Lanka Endpoints
 @app.get("/lk/salary/{role}")
@@ -81,8 +84,6 @@ def collect_salary_data():
     data = get_techsalary_data()
     return {"message": f"✅ {len(data)} salary records collected!", "data": data}
 
-from app.ai_advisor import get_ai_career_advice
-from pydantic import BaseModel
 
 # AI Career Advisor Endpoint
 class CareerAdviceRequest(BaseModel):
@@ -105,3 +106,7 @@ def career_advice(request: CareerAdviceRequest):
         target_role=request.target_role,
         goal=request.goal
     )
+
+@app.get("/skills/extinction/{skill_name}")
+def skill_extinction(skill_name: str):
+    return predict_skill_future(skill_name)
