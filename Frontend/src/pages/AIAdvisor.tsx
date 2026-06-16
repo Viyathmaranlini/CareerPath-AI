@@ -33,24 +33,60 @@ export default function AIAdvisor() {
 
   // Validation functions
   const validateStep1 = () => {
-    if (!form.name || form.name.trim().length < 2) {
-      setError('Valid නම් enter කරන්න! (අඩුම 2 characters)'); return false
-    }
-    if (!form.degree || form.degree.trim().length < 2) {
-      setError('Valid Degree enter කරන්න!'); return false
-    }
-    if (!form.university) {
-      setError('University select කරන්න!'); return false
-    }
-    setError(''); return true
+  // Name validation — only letters and spaces
+  const nameRegex = /^[a-zA-Z\u0D80-\u0DFF\s]{2,50}$/
+  if (!form.name || !nameRegex.test(form.name.trim())) {
+    setError('Valid නම් enter කරන්න! (Letters only, 2-50 characters)')
+    return false
   }
 
-  const validateStep2 = () => {
-    if (!form.skills || form.skills.trim().length < 2) {
-      setError('අඩුම skill එකක් enter කරන්න!'); return false
-    }
-    setError(''); return true
+  // Degree validation — must look like a real degree
+  const degreeRegex = /^[a-zA-Z\s\.]{3,60}$/
+  if (!form.degree || !degreeRegex.test(form.degree.trim())) {
+    setError('Valid Degree enter කරන්න! (eg: BSc Computer Science)')
+    return false
   }
+
+  // Degree must contain common degree keywords
+  const degreeKeywords = ['bsc', 'ba', 'beng', 'msc', 'phd', 'hnd', 'diploma', 'degree', 'computer', 'science', 'engineering', 'technology', 'it', 'software', 'business', 'management']
+  const degreeContainsKeyword = degreeKeywords.some(k => form.degree.toLowerCase().includes(k))
+  if (!degreeContainsKeyword) {
+    setError('Valid Academic Degree enter කරන්න! (eg: BSc Computer Science, HND IT)')
+    return false
+  }
+
+  if (!form.university) {
+    setError('University select කරන්න!')
+    return false
+  }
+
+  setError(''); return true
+}
+
+  const validateStep2 = () => {
+  if (!form.skills || form.skills.trim().length < 2) {
+    setError('අඩුම skill එකක් enter කරන්න!')
+    return false
+  }
+
+  // Skills must be real tech skills
+  const validSkills = ['python', 'javascript', 'java', 'react', 'angular', 'vue', 'html', 'css',
+    'sql', 'mysql', 'postgresql', 'mongodb', 'docker', 'kubernetes', 'aws', 'azure',
+    'git', 'linux', 'typescript', 'nodejs', 'express', 'django', 'flask', 'fastapi',
+    'machine learning', 'ml', 'ai', 'tensorflow', 'pytorch', 'pandas', 'numpy',
+    'php', 'laravel', 'c#', 'dotnet', '.net', 'spring', 'kotlin', 'swift', 'flutter',
+    'dart', 'r', 'scala', 'rust', 'go', 'golang', 'redis', 'graphql', 'rest', 'api']
+
+  const enteredSkills = form.skills.split(',').map(s => s.trim().toLowerCase())
+  const invalidSkills = enteredSkills.filter(s => s.length > 0 && !validSkills.some(v => s.includes(v) || v.includes(s)))
+
+  if (invalidSkills.length > 0 && invalidSkills[0].length > 1) {
+    setError(`"${invalidSkills[0]}" valid tech skill එකක් නෙවෙයි! (eg: python, react, docker)`)
+    return false
+  }
+
+  setError(''); return true
+}
 
   const validateStep3 = () => {
     if (!form.target_role) {
