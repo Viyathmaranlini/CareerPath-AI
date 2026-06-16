@@ -17,7 +17,6 @@ export default function AIAdvisor() {
   const roles = ['software engineer', 'data scientist', 'devops engineer', 'frontend developer', 'ml engineer']
 
   const handleSubmit = async () => {
-    if (!form.name || !form.degree || !form.target_role) { setError('සියලු fields fill කරන්න!'); return }
     setLoading(true); setError('')
     try {
       const res = await axios.post('http://localhost:8000/ai/career-advice', {
@@ -32,6 +31,37 @@ export default function AIAdvisor() {
 
   const update = (field: string, value: any) => setForm(f => ({ ...f, [field]: value }))
 
+  // Validation functions
+  const validateStep1 = () => {
+    if (!form.name || form.name.trim().length < 2) {
+      setError('Valid නම් enter කරන්න! (අඩුම 2 characters)'); return false
+    }
+    if (!form.degree || form.degree.trim().length < 2) {
+      setError('Valid Degree enter කරන්න!'); return false
+    }
+    if (!form.university) {
+      setError('University select කරන්න!'); return false
+    }
+    setError(''); return true
+  }
+
+  const validateStep2 = () => {
+    if (!form.skills || form.skills.trim().length < 2) {
+      setError('අඩුම skill එකක් enter කරන්න!'); return false
+    }
+    setError(''); return true
+  }
+
+  const validateStep3 = () => {
+    if (!form.target_role) {
+      setError('Target Role select කරන්න!'); return false
+    }
+    if (!form.goal || form.goal.trim().length < 10) {
+      setError('Goal clearly ලියන්න! (අඩුම 10 characters)'); return false
+    }
+    setError(''); return true
+  }
+
   return (
     <div className="page">
       <div style={{ marginBottom: '2rem' }}>
@@ -44,13 +74,20 @@ export default function AIAdvisor() {
           {/* Progress */}
           <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem' }}>
             {[1, 2, 3].map(s => (
-              <div key={s} style={{ flex: 1, height: '4px', borderRadius: '2px',
+              <div key={s} style={{
+                flex: 1, height: '4px', borderRadius: '2px',
                 background: step >= s ? 'linear-gradient(90deg, #4f8ef7, #8b5cf6)' : '#2a2a3a',
-                transition: 'background 0.3s' }} />
+                transition: 'background 0.3s'
+              }} />
             ))}
           </div>
 
-          {/* Step 1 — Personal Info */}
+          {/* Step indicator */}
+          <p style={{ fontSize: '0.82rem', color: '#5a5a7a', marginBottom: '1rem' }}>
+            Step {step} of 3
+          </p>
+
+          {/* Step 1 */}
           {step === 1 && (
             <div className="card">
               <h3 style={{ color: '#f0f0ff', marginBottom: '1.5rem', fontSize: '1rem' }}>
@@ -58,32 +95,36 @@ export default function AIAdvisor() {
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 <div>
-                  <label className="label">ඔබේ නම</label>
+                  <label className="label">ඔබේ නම *</label>
                   <input className="input" placeholder="Viyathmaranlini"
                     value={form.name} onChange={e => update('name', e.target.value)} />
                 </div>
                 <div>
-                  <label className="label">Degree / Qualification</label>
+                  <label className="label">Degree / Qualification *</label>
                   <input className="input" placeholder="BSc Computer Science"
                     value={form.degree} onChange={e => update('degree', e.target.value)} />
                 </div>
                 <div>
-                  <label className="label">University / Institute</label>
+                  <label className="label">University / Institute *</label>
                   <select className="input" value={form.university} onChange={e => update('university', e.target.value)}>
                     <option value="">-- Select කරන්න --</option>
                     {universities.map(u => <option key={u} value={u}>{u}</option>)}
                   </select>
                 </div>
               </div>
+              {error && (
+                <div style={{ padding: '0.75rem', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '8px', color: '#ef4444', fontSize: '0.85rem', marginTop: '1rem' }}>
+                  ⚠️ {error}
+                </div>
+              )}
               <button className="btn-primary" style={{ marginTop: '1.5rem', width: '100%' }}
-                onClick={() => { if (!form.name || !form.degree) { setError('Name සහ Degree fill කරන්න!'); return } setError(''); setStep(2) }}>
+                onClick={() => { if (validateStep1()) setStep(2) }}>
                 Continue →
               </button>
-              {error && <p style={{ color: '#ef4444', fontSize: '0.85rem', marginTop: '0.75rem' }}>{error}</p>}
             </div>
           )}
 
-          {/* Step 2 — Skills */}
+          {/* Step 2 */}
           {step === 2 && (
             <div className="card">
               <h3 style={{ color: '#f0f0ff', marginBottom: '1.5rem', fontSize: '1rem' }}>
@@ -91,13 +132,15 @@ export default function AIAdvisor() {
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 <div>
-                  <label className="label">ඔබේ Current Skills</label>
+                  <label className="label">ඔබේ Current Skills *</label>
                   <input className="input" placeholder="python, react, sql, docker"
                     value={form.skills} onChange={e => update('skills', e.target.value)} />
-                  <p style={{ fontSize: '0.75rem', color: '#5a5a7a', marginTop: '0.4rem' }}>Comma separated</p>
+                  <p style={{ fontSize: '0.75rem', color: '#5a5a7a', marginTop: '0.4rem' }}>
+                    Comma separated — e.g: python, html, css
+                  </p>
                 </div>
                 <div>
-                  <label className="label">Experience (Years)</label>
+                  <label className="label">Experience Level</label>
                   <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     {[0, 1, 2, 3, 5, 7, 10].map(y => (
                       <button key={y} onClick={() => update('experience_years', y)}
@@ -107,7 +150,7 @@ export default function AIAdvisor() {
                           background: form.experience_years === y ? 'rgba(79,142,247,0.15)' : 'transparent',
                           color: form.experience_years === y ? '#4f8ef7' : '#9090b0',
                           cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-                          fontSize: '0.875rem', fontWeight: 500
+                          fontSize: '0.875rem', fontWeight: 500, transition: 'all 0.2s'
                         }}>
                         {y === 0 ? 'Fresher' : `${y}yr`}
                       </button>
@@ -115,14 +158,19 @@ export default function AIAdvisor() {
                   </div>
                 </div>
               </div>
+              {error && (
+                <div style={{ padding: '0.75rem', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '8px', color: '#ef4444', fontSize: '0.85rem', marginTop: '1rem' }}>
+                  ⚠️ {error}
+                </div>
+              )}
               <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
-                <button className="btn-secondary" style={{ flex: 1 }} onClick={() => setStep(1)}>← Back</button>
-                <button className="btn-primary" style={{ flex: 2 }} onClick={() => { setError(''); setStep(3) }}>Continue →</button>
+                <button className="btn-secondary" style={{ flex: 1 }} onClick={() => { setError(''); setStep(1) }}>← Back</button>
+                <button className="btn-primary" style={{ flex: 2 }} onClick={() => { if (validateStep2()) setStep(3) }}>Continue →</button>
               </div>
             </div>
           )}
 
-          {/* Step 3 — Goal */}
+          {/* Step 3 */}
           {step === 3 && (
             <div className="card">
               <h3 style={{ color: '#f0f0ff', marginBottom: '1.5rem', fontSize: '1rem' }}>
@@ -130,7 +178,7 @@ export default function AIAdvisor() {
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 <div>
-                  <label className="label">Target Role</label>
+                  <label className="label">Target Role *</label>
                   <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     {roles.map(r => (
                       <button key={r} onClick={() => update('target_role', r)}
@@ -140,7 +188,8 @@ export default function AIAdvisor() {
                           background: form.target_role === r ? 'rgba(139,92,246,0.15)' : 'transparent',
                           color: form.target_role === r ? '#8b5cf6' : '#9090b0',
                           cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-                          fontSize: '0.82rem', fontWeight: 500, textTransform: 'capitalize'
+                          fontSize: '0.82rem', fontWeight: 500,
+                          textTransform: 'capitalize', transition: 'all 0.2s'
                         }}>
                         {r}
                       </button>
@@ -148,16 +197,26 @@ export default function AIAdvisor() {
                   </div>
                 </div>
                 <div>
-                  <label className="label">ඔබේ Goal</label>
-                  <textarea className="input" placeholder="6 months වල Sri Lanka IT job එකක් ගන්න..."
+                  <label className="label">ඔබේ Goal *</label>
+                  <textarea className="input"
+                    placeholder="6 months වල Sri Lanka IT job එකක් ගන්න..."
                     value={form.goal} onChange={e => update('goal', e.target.value)}
                     rows={3} style={{ resize: 'vertical' }} />
+                  <p style={{ fontSize: '0.75rem', color: '#5a5a7a', marginTop: '0.4rem' }}>
+                    අඩුම 10 characters ලියන්න
+                  </p>
                 </div>
               </div>
-              {error && <p style={{ color: '#ef4444', fontSize: '0.85rem', marginTop: '0.75rem' }}>{error}</p>}
+              {error && (
+                <div style={{ padding: '0.75rem', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '8px', color: '#ef4444', fontSize: '0.85rem', marginTop: '1rem' }}>
+                  ⚠️ {error}
+                </div>
+              )}
               <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
-                <button className="btn-secondary" style={{ flex: 1 }} onClick={() => setStep(2)}>← Back</button>
-                <button className="btn-primary" style={{ flex: 2 }} onClick={handleSubmit} disabled={loading}>
+                <button className="btn-secondary" style={{ flex: 1 }} onClick={() => { setError(''); setStep(2) }}>← Back</button>
+                <button className="btn-primary" style={{ flex: 2 }}
+                  onClick={() => { if (validateStep3()) handleSubmit() }}
+                  disabled={loading}>
                   {loading ? '🤖 AI Analyzing...' : '🚀 Get AI Career Advice'}
                 </button>
               </div>
@@ -166,7 +225,6 @@ export default function AIAdvisor() {
         </div>
       ) : (
         <div>
-          {/* Result Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
             <div>
               <h2 style={{ color: '#f0f0ff', fontSize: '1.25rem', fontWeight: 600 }}>
@@ -176,21 +234,17 @@ export default function AIAdvisor() {
                 {form.university} · {form.degree} · {form.experience_years === 0 ? 'Fresher' : `${form.experience_years}yr exp`}
               </p>
             </div>
-            <button className="btn-secondary" onClick={() => { setResult(null); setStep(1) }}>
+            <button className="btn-secondary" onClick={() => { setResult(null); setStep(1); setError('') }}>
               ← Start Over
             </button>
           </div>
 
-          {/* AI Advice */}
           <div className="card" style={{ marginBottom: '1.5rem' }}>
-            <div style={{
-              fontSize: '0.875rem', lineHeight: '1.8', color: '#d0d0e8',
-            }}>
+            <div style={{ fontSize: '0.875rem', lineHeight: '1.8', color: '#d0d0e8' }}>
               <ReactMarkdown>{result.advice}</ReactMarkdown>
             </div>
           </div>
 
-          {/* Stats */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
             <div className="stat-card">
               <div className="stat-value" style={{ color: '#10b981' }}>{result.roadmap_steps}</div>
