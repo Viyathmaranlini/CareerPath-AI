@@ -5,6 +5,8 @@ import TrendingSkills from './pages/TrendingSkills'
 import Roadmap from './pages/Roadmap'
 import AIAdvisor from './pages/AIAdvisor'
 import SkillExtinction from './pages/SkillExtinction'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
           <Route path="/roadmap" element={<Roadmap />} />
           <Route path="/ai-advisor" element={<AIAdvisor />} />
           <Route path="/extinction" element={<SkillExtinction />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
         </Routes>
       </div>
     </Router>
