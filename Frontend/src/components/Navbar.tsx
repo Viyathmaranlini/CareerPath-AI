@@ -1,14 +1,23 @@
 import { Link, useLocation } from 'react-router-dom'
+import { useLanguage } from '../LanguageContext'
+import { Language } from '../i18n'
 
 export default function Navbar() {
   const location = useLocation()
-  
+  const { language, setLanguage, t } = useLanguage()
+
   const links = [
-    { path: '/', label: 'Home' },
-    { path: '/trending', label: 'Trending' },
-    { path: '/roadmap', label: 'Roadmap' },
-    { path: '/ai-advisor', label: 'AI Advisor' },
-    { path: '/extinction', label: 'Skill Extinction' },
+    { path: '/', label: t('nav_home') },
+    { path: '/trending', label: t('nav_trending') },
+    { path: '/roadmap', label: t('nav_roadmap') },
+    { path: '/ai-advisor', label: t('nav_ai_advisor') },
+    { path: '/extinction', label: t('nav_skill_extinction') },
+  ]
+
+  const languages: { code: Language; flag: string; label: string }[] = [
+    { code: 'en', flag: '🇬🇧', label: 'EN' },
+    { code: 'si', flag: '🇱🇰', label: 'සිං' },
+    { code: 'ta', flag: '🇱🇰', label: 'தமி' },
   ]
 
   return (
@@ -23,7 +32,7 @@ export default function Navbar() {
       display: 'flex',
       alignItems: 'center',
       height: '64px',
-      gap: '2rem'
+      gap: '1.5rem'
     }}>
       {/* Logo */}
       <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
@@ -43,36 +52,38 @@ export default function Navbar() {
         {links.map(link => (
           <Link key={link.path} to={link.path} style={{
             textDecoration: 'none',
-            padding: '6px 14px',
+            padding: '6px 12px',
             borderRadius: '8px',
-            fontSize: '0.875rem',
+            fontSize: '0.85rem',
             fontWeight: 500,
             color: location.pathname === link.path ? '#f0f0ff' : '#9090b0',
             background: location.pathname === link.path ? '#2a2a3a' : 'transparent',
-            transition: 'all 0.2s'
-          }}
-          onMouseEnter={e => {
-            if (location.pathname !== link.path)
-              (e.target as HTMLElement).style.color = '#f0f0ff'
-          }}
-          onMouseLeave={e => {
-            if (location.pathname !== link.path)
-              (e.target as HTMLElement).style.color = '#9090b0'
+            transition: 'all 0.2s',
+            whiteSpace: 'nowrap'
           }}>
             {link.label}
           </Link>
         ))}
       </div>
 
-      {/* Badge */}
-      <div style={{
-        padding: '6px 14px', borderRadius: '20px',
-        background: 'rgba(79,142,247,0.1)',
-        border: '1px solid rgba(79,142,247,0.3)',
-        color: '#4f8ef7', fontSize: '0.8rem', fontWeight: 600,
-        flexShrink: 0
-      }}>
-        🇱🇰 Sri Lanka
+      {/* Language Switcher */}
+      <div style={{ display: 'flex', gap: '0.35rem', flexShrink: 0 }}>
+        {languages.map(lang => (
+          <button key={lang.code} onClick={() => setLanguage(lang.code)}
+            style={{
+              padding: '5px 10px', borderRadius: '8px',
+              border: '1px solid',
+              borderColor: language === lang.code ? '#4f8ef7' : '#2a2a3a',
+              background: language === lang.code ? 'rgba(79,142,247,0.15)' : 'transparent',
+              color: language === lang.code ? '#4f8ef7' : '#9090b0',
+              cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+              fontSize: '0.78rem', fontWeight: 600,
+              display: 'flex', alignItems: 'center', gap: '4px',
+              transition: 'all 0.2s'
+            }}>
+            {lang.flag} {lang.label}
+          </button>
+        ))}
       </div>
     </nav>
   )
