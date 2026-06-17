@@ -7,6 +7,7 @@ import AIAdvisor from './pages/AIAdvisor'
 import SkillExtinction from './pages/SkillExtinction'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import SavedRoadmaps from './pages/SavedRoadmaps'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/extinction" element={<SkillExtinction />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/saved-roadmaps" element={<SavedRoadmaps />} />
         </Routes>
       </div>
     </Router>
