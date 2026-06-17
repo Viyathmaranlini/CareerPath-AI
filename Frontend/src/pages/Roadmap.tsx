@@ -1,20 +1,26 @@
 import { useState } from 'react'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../LanguageContext'
+import { useAuth } from '../AuthContext'
 
 export default function Roadmap() {
   const { t } = useLanguage()
+  const { isAuthenticated, token } = useAuth()
+  const navigate = useNavigate()
+
   const [currentSkills, setCurrentSkills] = useState('')
   const [targetRole, setTargetRole] = useState('')
   const [result, setResult] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [saved, setSaved] = useState(false)
 
   const roles = ['software engineer', 'data scientist', 'devops engineer', 'frontend developer']
 
   const handleGenerate = async () => {
     if (!currentSkills || !targetRole) { setError('Skills සහ Role දෙකම enter කරන්න!'); return }
-    setLoading(true); setError('')
+    setLoading(true); setError(''); setSaved(false)
     const skillsList = currentSkills.split(',').map(s => s.trim().toLowerCase()).filter(s => s)
     try {
       const res = await axios.post('http://localhost:8000/roadmap/generate', {
@@ -23,6 +29,19 @@ export default function Roadmap() {
       setResult(res.data)
     } catch { setError('Backend connect වෙන්න බැහැ!') }
     finally { setLoading(false) }
+  }
+
+  const handleSaveRoadmap = async () => {
+    if (!isAuthenticated) { navigate('/login'); return }
+    try {
+      await axios.post('http://localhost:8000/roadmap/save',
+        { target_role: targetRole, roadmap_data: result },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      setSaved(true)
+    } catch {
+      console.error('Save failed')
+    }
   }
 
   return (
@@ -56,7 +75,7 @@ export default function Roadmap() {
 
       {result && (
         <div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
             {[
               { value: result.skills_to_learn, label: t('roadmap_skills_to_learn'), color: '#4f8ef7' },
               { value: `${result.total_hours}h`, label: t('roadmap_total_time'), color: '#8b5cf6' },
@@ -69,6 +88,10 @@ export default function Roadmap() {
               </div>
             ))}
           </div>
+
+          <button className="btn-secondary" style={{ marginBottom: '1.5rem' }} onClick={handleSaveRoadmap} disabled={saved}>
+            {saved ? '✅ Saved!' : '💾 Save This Roadmap'}
+          </button>
 
           <div className="card" style={{ marginBottom: '1.5rem', background: 'linear-gradient(135deg, rgba(79,142,247,0.08), rgba(139,92,246,0.08))', border: '1px solid rgba(79,142,247,0.2)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

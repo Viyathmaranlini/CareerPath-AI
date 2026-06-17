@@ -1,10 +1,13 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../LanguageContext'
+import { useAuth } from '../AuthContext'
 import { Language } from '../i18n'
 
 export default function Navbar() {
   const location = useLocation()
+  const navigate = useNavigate()
   const { language, setLanguage, t } = useLanguage()
+  const { user, logout, isAuthenticated } = useAuth()
 
   const links = [
     { path: '/', label: t('nav_home') },
@@ -20,6 +23,11 @@ export default function Navbar() {
     { code: 'ta', flag: '🇱🇰', label: 'தமி' },
   ]
 
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
+
   return (
     <nav style={{
       background: 'rgba(10,10,15,0.8)',
@@ -32,7 +40,7 @@ export default function Navbar() {
       display: 'flex',
       alignItems: 'center',
       height: '64px',
-      gap: '1.5rem'
+      gap: '1.25rem'
     }}>
       {/* Logo */}
       <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
@@ -85,6 +93,42 @@ export default function Navbar() {
           </button>
         ))}
       </div>
+
+      {/* Divider */}
+      <div style={{ width: '1px', height: '24px', background: '#2a2a3a', flexShrink: 0 }} />
+
+      {/* Auth Section */}
+      {isAuthenticated ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+          <Link to="/saved-roadmaps" style={{ textDecoration: 'none' }}>
+            <div style={{
+              width: '32px', height: '32px', borderRadius: '50%',
+              background: 'linear-gradient(135deg, #4f8ef7, #8b5cf6)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: 'white', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer'
+            }}>
+              {user?.name?.charAt(0).toUpperCase()}
+            </div>
+          </Link>
+          <span style={{ color: '#9090b0', fontSize: '0.82rem' }}>{user?.name}</span>
+          <button onClick={handleLogout} className="btn-secondary" style={{ padding: '5px 12px', fontSize: '0.78rem' }}>
+            Logout
+          </button>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+          <Link to="/login" style={{ textDecoration: 'none' }}>
+            <button className="btn-secondary" style={{ padding: '6px 14px', fontSize: '0.82rem' }}>
+              Login
+            </button>
+          </Link>
+          <Link to="/signup" style={{ textDecoration: 'none' }}>
+            <button className="btn-primary" style={{ padding: '6px 14px', fontSize: '0.82rem' }}>
+              Sign Up
+            </button>
+          </Link>
+        </div>
+      )}
     </nav>
   )
 }
