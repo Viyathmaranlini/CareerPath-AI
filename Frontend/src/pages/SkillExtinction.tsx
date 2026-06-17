@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import axios from 'axios'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Area, AreaChart } from 'recharts'
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Area, AreaChart } from 'recharts'
+import { useLanguage } from '../LanguageContext'
 
 const SKILL_CATEGORIES = {
   '🔥 Trending': ['python', 'react', 'typescript', 'docker', 'kubernetes', 'aws'],
@@ -9,6 +10,7 @@ const SKILL_CATEGORIES = {
 }
 
 export default function SkillExtinction() {
+  const { t } = useLanguage()
   const [skill, setSkill] = useState('')
   const [result, setResult] = useState<any>(null)
   const [compareSkill, setCompareSkill] = useState('')
@@ -61,8 +63,8 @@ export default function SkillExtinction() {
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', borderRadius: '20px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', fontSize: '0.78rem', fontWeight: 600, marginBottom: '0.75rem' }}>
           ☠️ Extinction Risk Analysis
         </div>
-        <h1 className="section-title">Skill Extinction Predictor</h1>
-        <p className="section-subtitle">Sri Lanka IT market 2019-2028 skill demand forecast — ඔබේ skills safe ද?</p>
+        <h1 className="section-title">{t('extinction_title')}</h1>
+        <p className="section-subtitle">{t('extinction_subtitle')}</p>
       </div>
 
       {/* Tabs */}
@@ -75,9 +77,9 @@ export default function SkillExtinction() {
               background: activeTab === tab ? 'rgba(79,142,247,0.15)' : 'transparent',
               color: activeTab === tab ? '#4f8ef7' : '#9090b0',
               cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-              fontSize: '0.875rem', fontWeight: 500, textTransform: 'capitalize'
+              fontSize: '0.875rem', fontWeight: 500
             }}>
-            {tab === 'analyze' ? '🔍 Analyze Skill' : '⚖️ Compare Skills'}
+            {tab === 'analyze' ? t('extinction_analyze') : t('extinction_compare')}
           </button>
         ))}
       </div>
@@ -87,12 +89,12 @@ export default function SkillExtinction() {
         {activeTab === 'analyze' ? (
           <div>
             <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem' }}>
-              <input className="input" placeholder="Skill name (eg: jquery, python, docker)"
+              <input className="input" placeholder={t('extinction_placeholder')}
                 value={skill} onChange={e => setSkill(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleCheck()}
                 style={{ flex: 1 }} />
               <button className="btn-primary" onClick={() => handleCheck()} style={{ flexShrink: 0, padding: '0 1.5rem' }}>
-                {loading ? '...' : 'Analyze →'}
+                {loading ? '...' : t('extinction_btn')}
               </button>
             </div>
           </div>
@@ -106,7 +108,7 @@ export default function SkillExtinction() {
                 value={compareSkill} onChange={e => setCompareSkill(e.target.value)} />
             </div>
             <button className="btn-primary" onClick={handleCompare} style={{ width: '100%' }}>
-              {loading ? '...' : '⚖️ Compare Skills'}
+              {loading ? '...' : t('extinction_compare_btn')}
             </button>
           </div>
         )}
@@ -126,7 +128,11 @@ export default function SkillExtinction() {
           ))}
         </div>
 
-        {error && <div style={{ padding: '0.75rem', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '8px', color: '#ef4444', fontSize: '0.85rem', marginTop: '0.75rem' }}>⚠️ {error}</div>}
+        {error && (
+          <div style={{ padding: '0.75rem', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '8px', color: '#ef4444', fontSize: '0.85rem', marginTop: '0.75rem' }}>
+            ⚠️ {error}
+          </div>
+        )}
       </div>
 
       {/* Results */}
@@ -165,7 +171,7 @@ export default function SkillExtinction() {
           <div className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
               <h4 style={{ color: '#f0f0ff', margin: 0 }}>
-                📊 Demand Trend 2019-2028
+                {t('extinction_chart_title')}
                 {compareResult && ` — ${result.skill} vs ${compareResult.skill}`}
               </h4>
               <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem', color: '#5a5a7a' }}>
@@ -190,9 +196,7 @@ export default function SkillExtinction() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#2a2a3a" />
                 <XAxis dataKey="year" stroke="#5a5a7a" fontSize={12} />
                 <YAxis domain={[0, 100]} tickFormatter={v => `${v}%`} stroke="#5a5a7a" fontSize={12} />
-                <Tooltip
-                  contentStyle={{ background: '#16161f', border: '1px solid #2a2a3a', borderRadius: '8px', color: '#f0f0ff' }}
-                  formatter={(value: any) => [`${value}%`]} />
+                <Tooltip contentStyle={{ background: '#16161f', border: '1px solid #2a2a3a', borderRadius: '8px', color: '#f0f0ff' }} formatter={(value: any) => [`${value}%`]} />
                 <ReferenceLine x="2025" stroke="#5a5a7a" strokeDasharray="5 5" label={{ value: 'Now', fill: '#5a5a7a', fontSize: 11 }} />
                 <Area type="monotone" dataKey={result.skill} stroke={result.color} strokeWidth={2.5} fill="url(#grad1)" dot={{ r: 3, fill: result.color }} />
                 {compareResult && (
