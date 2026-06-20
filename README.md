@@ -100,8 +100,6 @@ Built for all Sri Lankans — available in **English**, **සිංහල** and 
 ## 📁 Project Structure
 
 
----
-
 ## 🚀 Setup
 
 ### Prerequisites
